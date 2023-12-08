@@ -7,7 +7,7 @@ window.onload = () => {
     const link = val.match(HREF_REG)?.[0]
     btn.textContent = '加载中'
     btn.disabled = true
-    const res = await fetch(`/${encodeURIComponent(link)}`)
+    const res = await fetch(`/rewriter/${encodeURIComponent(link)}`)
     const data = await res.json()
     btn.textContent = '去水印'
     btn.disabled = false

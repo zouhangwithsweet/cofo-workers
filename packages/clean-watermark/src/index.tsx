@@ -1,14 +1,14 @@
 import { Hono } from 'hono'
-import puppeteer, { BrowserWorker } from '@cloudflare/puppeteer'
+// import puppeteer, { BrowserWorker } from '@cloudflare/puppeteer'
 import { serveStatic } from 'hono/cloudflare-workers'
 import type { FC } from 'hono/jsx'
 
-const IMAGE_URL = /url\(\"(https?:\/\/[\w\-!\_]*\.\w+\.\w+\/\w+\/\w+\/\w+!?[\w\-!\_]*)\"\)/
-let images: string[] = []
+// const IMAGE_URL = /url\(\"(https?:\/\/[\w\-!\_]*\.\w+\.\w+\/\w+\/\w+\/\w+!?[\w\-!\_]*)\"\)/
+let images: Map<string, string[]> = new Map()
 
 const app = new Hono<{
   Bindings: {
-    MYBROWSER: BrowserWorker
+    // MYBROWSER: BrowserWorker
   }
 }>()
 
@@ -49,25 +49,49 @@ app.get('/', async (c) => {
   )
 })
 
-app.get('/:href', async (c) => {
-  try {
-    images = []
-    const browser = await puppeteer.launch(c.env.MYBROWSER)
-    const page = await browser.newPage()
-    await page.goto(c.req.param('href'))
-    const slide = await page.$$eval('.swiper-slide', (els) => els.map((el) => el.getAttribute('style')))
-    await browser.close()
+/**
+ * @deprecated
+ */
+// app.get('/:href', async (c) => {
+//   try {
+//     images = []
+//     const browser = await puppeteer.launch(c.env.MYBROWSER)
+//     const page = await browser.newPage()
+//     await page.goto(c.req.param('href'))
+//     const slide = await page.$$eval('.swiper-slide', (els) => els.map((el) => el.getAttribute('style')))
+//     await browser.close()
 
-    images = slide.map((s) => IMAGE_URL.exec(s)?.[1] || '')
-    return c.json({ slide: slide.map((_, index) => `/image/${index}`) })
-  } catch (error: any) {
+//     images = slide.map((s) => IMAGE_URL.exec(s)?.[1] || '')
+//     return c.json({ slide: slide.map((_, index) => `/image/${index}`) })
+//   } catch (error: any) {
+//     return c.text(`error: ${c.req.param('href')} ${error}`)
+//   }
+// })
+
+app.get('/rewriter/:href', async (c) => {
+  try {
+    const res = await fetch(c.req.param('href'))
+    const key = new URL(res.url).pathname.split('/').pop()
+    const html = /<script>window.__INITIAL_STATE__=({.*})<\/script>/
+      .exec((await fetch(res.url).then((res) => res.text())).trim())?.[1]
+      .replace(/undefined/g, 'null')
+    images.clear()
+    images.set(
+      key!,
+      JSON.parse(html || '{}')?.note.noteDetailMap[key!].note.imageList.map(
+        (item: { urlDefault: string }) => item.urlDefault
+      )
+    )
+    return c.json({ slide: images.get(key!)?.map((_, index) => `/image/${key}/${index}`) })
+  } catch (error) {
     return c.text(`error: ${c.req.param('href')} ${error}`)
   }
 })
 
-app.get('/image/:id', async (c) => {
+app.get('/image/:key/:id', async (c) => {
   try {
-    const img = await fetch(images[+c.req.param('id')])
+    const cache = images.get(c.req.param('key')!)!
+    const img = await fetch(cache[+c.req.param('id')!])
     const buffer = await img.arrayBuffer()
 
     c.res.headers.append('Content-Type', `image/png`)
