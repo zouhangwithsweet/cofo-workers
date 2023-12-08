@@ -1,8 +1,21 @@
 const HREF_REG = /http(s?)\:\/\/\w+\.\w+\/\w+/g
 const slogan = new Image()
-slogan.src = window.location.origin + '/static/images/slogan.svg'
+window.sloganIndex = 0
+const sloganMap = ['/static/images/slogan.svg', '/static/images/slogan_two.svg', '/static/images/slogan_three.svg']
+slogan.src = window.location.origin + sloganMap[window.sloganIndex]
 
 window.onload = () => {
+  document.querySelectorAll('.slogan').forEach((s, index) => {
+    s.addEventListener('click', () => {
+      window.sloganIndex = index
+      slogan.src = window.location.origin + sloganMap[window.sloganIndex]
+      document.querySelectorAll('.slogan').forEach((s) => {
+        s.classList.remove('after:opacity-60', "before:content-['_']")
+      })
+      s.classList.add('after:opacity-60', "before:content-['_']")
+    })
+  })
+
   document.querySelector('button').addEventListener('click', async () => {
     const btn = document.querySelector('button')
     const val = document.querySelector('textarea').value

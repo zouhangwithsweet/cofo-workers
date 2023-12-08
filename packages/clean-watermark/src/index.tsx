@@ -47,6 +47,19 @@ app.get('/', async (c) => {
             去水印
           </button>
         </div>
+        <div class="text-sm font-500 text-#a2a2a2">选择你喜欢的峰哥名言</div>
+        <div class="flex flex-wrap gap-2">
+          {['/static/images/slogan.svg', '/static/images/slogan_two.svg', '/static/images/slogan_three.svg'].map(
+            (src) => (
+              <div
+                key={src}
+                class="slogan relative before:absolute before:z-2 before:h-1/5 before:bottom-0 before:left-0 before:right-0 before:bg-red after:content-['_'] hover:after:opacity-60 after:opacity-20 after:blur-sm after:absolute after:top-0 after:left-0 after:right-0 after:bottom-0 after:bg-yellow-300"
+              >
+                <img src={src} alt="" class="relative z-10 cursor-pointer" />
+              </div>
+            )
+          )}
+        </div>
         <div class="grid grid-cols-2 gap-2"></div>
       </div>
     </Layout>
@@ -82,9 +95,9 @@ app.get('/rewriter/:href', async (c) => {
     images.clear()
     images.set(
       key!,
-      JSON.parse(html || '{}')?.note.noteDetailMap[key!].note.imageList.map(
-        (item: { urlDefault: string }) => item.urlDefault
-      ).map((url: string) => getImageUrl(new URL(url).pathname.split('/').pop()?.split('!')[0]!))
+      JSON.parse(html || '{}')
+        ?.note.noteDetailMap[key!].note.imageList.map((item: { urlDefault: string }) => item.urlDefault)
+        .map((url: string) => getImageUrl(new URL(url).pathname.split('/').pop()?.split('!')[0]!))
     )
     return c.json({ slide: images.get(key!)?.map((_, index) => `/image/${key}/${index}`) })
   } catch (error) {
