@@ -5,6 +5,9 @@ import type { FC } from 'hono/jsx'
 
 // const IMAGE_URL = /url\(\"(https?:\/\/[\w\-!\_]*\.\w+\.\w+\/\w+\/\w+\/\w+!?[\w\-!\_]*)\"\)/
 let images: Map<string, string[]> = new Map()
+const getImageUrl = (hash: string) => {
+  return `https://ci.xiaohongshu.com/${hash}?imageView2/2/w/format/png`
+}
 
 const app = new Hono<{
   Bindings: {
@@ -17,6 +20,7 @@ app.get('/static/*', serveStatic({ root: './' }))
 const Layout: FC = (props) => {
   return (
     <html>
+      <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1"></meta>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unocss/reset/tailwind.min.css"></link>
       <link rel="preconnect" href="https://fonts.googleapis.com"></link>
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""></link>
@@ -33,7 +37,7 @@ const Layout: FC = (props) => {
 app.get('/', async (c) => {
   return c.html(
     <Layout>
-      <div class="mx-auto w-90% max-w-xl pt-8 px-4 space-y-3 [&_*]:box-border">
+      <div class="mx-auto sm:w-90% sm:max-w-xl pt-4 sm:pt-8 sm:px-4 space-y-3 [&_*]:box-border">
         <div class="flex gap-2 flex-wrap">
           <textarea
             class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -80,7 +84,7 @@ app.get('/rewriter/:href', async (c) => {
       key!,
       JSON.parse(html || '{}')?.note.noteDetailMap[key!].note.imageList.map(
         (item: { urlDefault: string }) => item.urlDefault
-      )
+      ).map((url: string) => getImageUrl(new URL(url).pathname.split('/').pop()?.split('!')[0]!))
     )
     return c.json({ slide: images.get(key!)?.map((_, index) => `/image/${key}/${index}`) })
   } catch (error) {
