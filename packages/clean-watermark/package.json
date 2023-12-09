@@ -2,7 +2,7 @@
   "scripts": {
     "dev": "wrangler dev src/index.tsx",
     "deploy": "pnpm run gen:css && wrangler deploy --minify src/index.tsx",
-    "gen:css": "unocss \"./src/**/*.tsx\" \"./assets/**/*.js\" -o ./assets/static/css/uno.css"
+    "gen:css": "unocss \"./src/**/*.tsx\" \"./assets/**/*.js\" -o ./assets/static/css/uno.css -m"
   },
   "dependencies": {
     "@cloudflare/puppeteer": "^0.0.5",
