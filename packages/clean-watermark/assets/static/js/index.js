@@ -67,9 +67,9 @@ window.onload = () => {
         download.classList.add(
           'py-.5',
           'px-1.5',
-          'bg-white/60',
+          'bg-white/80',
           'text-xs',
-          'text-#a2a2a2',
+          'text-#999',
           'rounded-md',
           'absolute',
           'top-2',
