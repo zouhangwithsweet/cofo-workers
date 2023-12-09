@@ -22,13 +22,9 @@ const Layout: FC = (props) => {
     <html>
       <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1"></meta>
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unocss/reset/tailwind.min.css"></link>
-      <link rel="preconnect" href="https://fonts.googleapis.com"></link>
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""></link>
-      <link href="https://fonts.googleapis.com/css2?family=Varela+Round&amp;display=swap" rel="stylesheet"></link>
+      <link rel="stylesheet" href="/static/css/uno.css" />
 
-      <body class="pb-10 px-4 bg-#f7f7f7 font-[Varela_Round]">{props.children}</body>
-
-      <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
+      <body class="pb-10 px-4 bg-#121212 antialiased">{props.children}</body>
       <script src="/static/js/index.js" />
     </html>
   )
@@ -40,25 +36,29 @@ app.get('/', async (c) => {
       <div class="mx-auto sm:w-90% sm:max-w-xl pt-4 sm:pt-8 sm:px-4 space-y-3 [&_*]:box-border">
         <div class="flex gap-2 flex-wrap">
           <textarea
-            class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            class="flex min-h-[80px] w-full rounded-md border px-3 py-2 bg-#222 resize-none text-white border-#383838 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="小红书分享链接"
           ></textarea>
-          <button class="inline-flex ml-auto items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-sky-400 text-white hover:bg-secondary/80 h-10 px-4 py-2 w-auto flex-shrink-0 w-auto flex-shrink-0">
-            去水印
+          <button class="flex ml-auto items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 bg-gradient-linear bg-gradient-[90deg,#25AE6A_0%,#68D94B_100%] text-white h-9 px-4 py-1 w-auto flex-shrink-0 w-auto flex-shrink-0">
+            想连接了
           </button>
         </div>
         <div class="text-sm font-500 text-#a2a2a2">选择你喜欢的峰哥名言</div>
-        <div class="flex flex-wrap gap-2">
-          {['/static/images/slogan.svg', '/static/images/slogan_two.svg', '/static/images/slogan_three.svg'].map(
-            (src) => (
-              <div
-                key={src}
-                class="slogan relative before:absolute before:z-2 before:h-1/5 before:bottom-0 before:left-0 before:right-0 before:bg-red after:content-['_'] hover:after:opacity-60 after:opacity-20 after:blur-sm after:absolute after:top-0 after:left-0 after:right-0 after:bottom-0 after:bg-yellow-300"
-              >
-                <img src={src} alt="" class="relative z-10 cursor-pointer" />
-              </div>
-            )
-          )}
+        <div class="flex flex-wrap gap-2 gap-y-3">
+          {[
+            '/static/images/slogan.svg',
+            '/static/images/slogan_two.svg',
+            '/static/images/slogan_three.svg',
+            '/static/images/slogan_four.svg',
+            '/static/images/slogan_five.svg',
+          ].map((src) => (
+            <div
+              key={src}
+              class="slogan relative before:absolute before:z-2 before:h-1/5 before:bottom-0 before:left-0 before:right-0 before:bg-green-600 after:content-['_'] hover:after:opacity-60 after:opacity-20 after:blur-sm after:absolute after:top-0 after:left-0 after:right-0 after:bottom-0 after:bg-yellow-300"
+            >
+              <img src={src} alt="" class="relative z-10 cursor-pointer" />
+            </div>
+          ))}
         </div>
         <div class="grid grid-cols-2 gap-2"></div>
       </div>

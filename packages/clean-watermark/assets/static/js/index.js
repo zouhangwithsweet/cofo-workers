@@ -1,10 +1,17 @@
 const HREF_REG = /http(s?)\:\/\/\w+\.\w+\/\w+/g
 const slogan = new Image()
 window.sloganIndex = 0
-const sloganMap = ['/static/images/slogan.svg', '/static/images/slogan_two.svg', '/static/images/slogan_three.svg']
+const sloganMap = [
+  '/static/images/slogan.svg',
+  '/static/images/slogan_two.svg',
+  '/static/images/slogan_three.svg',
+  '/static/images/slogan_four.svg',
+  '/static/images/slogan_five.svg',
+]
 slogan.src = window.location.origin + sloganMap[window.sloganIndex]
 
 window.onload = () => {
+  document.querySelector('.slogan').classList.add('after:opacity-60', "before:content-['_']")
   document.querySelectorAll('.slogan').forEach((s, index) => {
     s.addEventListener('click', () => {
       window.sloganIndex = index
@@ -21,13 +28,14 @@ window.onload = () => {
     const val = document.querySelector('textarea').value
     const link = val.match(HREF_REG)?.[0]
 
-    btn.textContent = '加载中'
+    if (!link) return
+    btn.textContent = '压抑了...'
     btn.disabled = true
 
     const res = await fetch(`/rewriter/${encodeURIComponent(link)}`)
     const data = await res.json()
 
-    btn.textContent = '去水印'
+    btn.textContent = '想连接了'
     btn.disabled = false
 
     const grid = document.querySelector('.grid')
@@ -51,7 +59,31 @@ window.onload = () => {
         )
         const i = new Image()
         i.src = canvas.toDataURL('image/png')
-        grid.appendChild(i)
+
+        const wrapper = document.createElement('div')
+
+        const download = document.createElement('a')
+        download.textContent = '拿下'
+        download.classList.add(
+          'py-.5',
+          'px-1.5',
+          'bg-white/60',
+          'text-xs',
+          'text-#a2a2a2',
+          'rounded-md',
+          'absolute',
+          'top-2',
+          'right-2',
+          'cursor-pointer'
+        )
+        download.target = '_blank'
+        download.href = i.src
+        download.download = s.replace('/', '_') + '.png'
+
+        wrapper.classList.add('relative')
+        wrapper.appendChild(i)
+        wrapper.appendChild(download)
+        grid.appendChild(wrapper)
       }
     })
   })
