@@ -1,18 +1,14 @@
 import { Hono } from 'hono'
-// import puppeteer, { BrowserWorker } from '@cloudflare/puppeteer'
 import { serveStatic } from 'hono/cloudflare-workers'
 import type { FC } from 'hono/jsx'
 
-// const IMAGE_URL = /url\(\"(https?:\/\/[\w\-!\_]*\.\w+\.\w+\/\w+\/\w+\/\w+!?[\w\-!\_]*)\"\)/
 let images: Map<string, string[]> = new Map()
 const getImageUrl = (hash: string) => {
   return `https://ci.xiaohongshu.com/${hash}?imageView2/2/w/format/png`
 }
 
 const app = new Hono<{
-  Bindings: {
-    // MYBROWSER: BrowserWorker
-  }
+  Bindings: {}
 }>()
 
 app.get('/static/*', serveStatic({ root: './' }))
@@ -65,25 +61,6 @@ app.get('/', async (c) => {
     </Layout>
   )
 })
-
-/**
- * @deprecated
- */
-// app.get('/:href', async (c) => {
-//   try {
-//     images = []
-//     const browser = await puppeteer.launch(c.env.MYBROWSER)
-//     const page = await browser.newPage()
-//     await page.goto(c.req.param('href'))
-//     const slide = await page.$$eval('.swiper-slide', (els) => els.map((el) => el.getAttribute('style')))
-//     await browser.close()
-
-//     images = slide.map((s) => IMAGE_URL.exec(s)?.[1] || '')
-//     return c.json({ slide: slide.map((_, index) => `/image/${index}`) })
-//   } catch (error: any) {
-//     return c.text(`error: ${c.req.param('href')} ${error}`)
-//   }
-// })
 
 app.get('/rewriter/:href', async (c) => {
   try {
