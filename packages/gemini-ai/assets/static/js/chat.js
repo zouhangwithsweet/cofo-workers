@@ -1,7 +1,10 @@
 import { fetchEventSource } from 'https://esm.sh/@microsoft/fetch-event-source@2.0.1'
+import { parse } from 'https://esm.sh/marked'
 
 const sendHandler = async () => {
   const ctrl = new AbortController()
+  let chunk = ''
+
   await fetchEventSource('/chat', {
     method: 'POST',
     headers: {
@@ -14,7 +17,8 @@ const sendHandler = async () => {
 
     async onopen() {},
     onmessage(ev) {
-      document.querySelector('.content').textContent = document.querySelector('.content').textContent + '\n' + ev.data
+      chunk += ev.data
+      document.querySelector('.content').innerHTML = parse(chunk)
     },
     onclose() {},
     onerror(error) {
