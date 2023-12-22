@@ -17,10 +17,15 @@ app.get('/', (c) => {
   return c.html(
     <html>
       <head>
-        <title>Test Site</title>
-        <script type="module" src="/static/js/chat.js" />
+        <title>Hang AI</title>
       </head>
-      <body>Hello!</body>
+      <body>
+        <h1>Gemini AI</h1>
+        <input id='q' />
+        <button>send</button>
+        <div class="content"></div>
+      </body>
+      <script type="module" src="/static/js/chat.js" />
     </html>
   )
 })
@@ -28,30 +33,35 @@ app.get('/', (c) => {
 app.post('/chat', async (c) => {
   if (!genAI) genAI = new GoogleGenerativeAI(c.env.GEMINI_KEY)
 
-  const body = await c.req.json<{
-    q?: string,
-    history?: InputContent[]
-  }>()
-  if (!body.q) {
-    return c.text('Hello world')
-  }
-
-  const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
-
-  const chat = model.startChat({
-    history: body.history || [],
-    generationConfig: {},
-  })
-  const result = await chat.sendMessageStream(body.q!)
-
-  return streamSSE(c, async (stream) => {
-    c.header('Content-Type', 'text/event-stream; charset=utf-8')
-
-    for await (const chunk of result.stream) {
-      const chunkText = chunk.text()
-      await stream.writeSSE({ data: chunkText, event: 'time-update', id: '' + Date.now() })
+  try {
+    const body = await c.req.json<{
+      q?: string,
+      history?: InputContent[]
+    }>()
+    if (!body.q) {
+      return c.text('No question provided')
     }
-  })
+  
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+  
+    const chat = model.startChat({
+      history: body.history || [],
+      generationConfig: {},
+    })
+    const result = await chat.sendMessageStream(body.q!)
+  
+    return streamSSE(c, async (stream) => {
+      c.header('Content-Type', 'text/event-stream; charset=utf-8')
+  
+      for await (const chunk of result.stream) {
+        const chunkText = chunk.text()
+        await stream.writeSSE({ data: chunkText, event: 'time-update', id: '' + Date.now() })
+      }
+    })
+  } catch (error: any) {
+    c.status(500)
+    return c.json({ error: error?.message || 'Unknown error' })
+  }
 })
 
 export default app
