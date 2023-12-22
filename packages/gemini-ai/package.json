@@ -1,7 +1,9 @@
 {
   "scripts": {
     "dev": "wrangler dev src/index.tsx",
-    "deploy": "wrangler deploy --minify src/index.tsx"
+    "deploy": "wrangler deploy --minify src/index.tsx",
+    "gen:css": "unocss \"./src/**/*.tsx\" \"./assets/**/*.js\" -o ./assets/static/css/uno.css -m",
+    "css:dev": "unocss \"./src/**/*.tsx\" \"./assets/**/*.js\" -o ./assets/static/css/uno.css --watch"
   },
   "dependencies": {
     "@google/generative-ai": "^0.1.1",
@@ -9,6 +11,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230914.0",
+    "@unocss/cli": "^0.58.0",
     "wrangler": "^3.15.0"
   }
 }
